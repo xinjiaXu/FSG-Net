@@ -43,11 +43,11 @@ def train(opt):
         # 当 record=1 时，创建实验文件夹并准备记录
         # ++++++++++++++ 修改开始 ++++++++++++++
         # 1. 从路径中提取数据集名称
-        dataset_name = os.path.basename(opt.dataset_dir)
+        dataset_name = opt.dataset_name or os.path.basename(os.path.normpath(opt.dataset_dir))
         print(f"Dataset Name: {dataset_name}")
 
         # 2. 将数据集名称传递给 check_dirs 函数
-        save_path, best_ckp_save_path, best_ckp_file, result_save_path = check_dirs(dataset_name)
+        save_path, best_ckp_save_path, best_ckp_file, result_save_path = check_dirs(dataset_name, opt.output_dir)
         #save_path, best_ckp_save_path, best_ckp_file, result_save_path = check_dirs()
         weights_save_path = best_ckp_save_path  # 将旧变量名赋给新变量名
 
@@ -65,8 +65,7 @@ def train(opt):
 
     model = ChangeDetection(opt).cuda()
     if torch.cuda.device_count() > 1:
-        # model = torch.nn.DataParallel(model)
-        model = torch.nn.DataParallel(model,device_ids = [0,1,2,3])
+        model = torch.nn.DataParallel(model)
     criterion = SelectLoss(opt.loss)
 
     if opt.finetune:
@@ -156,6 +155,11 @@ if __name__ == "__main__":
                         default="")
     parser.add_argument("--cuda", type=str, default="0")
     parser.add_argument("--dataset-dir", type=str, default='data/your_dataset')
+    parser.add_argument("--dataset-name", type=str, default=None)
+    parser.add_argument("--output-dir", type=str, default="./runs")
+    parser.add_argument("--image-dir-a", type=str, default="A")
+    parser.add_argument("--image-dir-b", type=str, default="B")
+    parser.add_argument("--label-dir", type=str, default="label")
     parser.add_argument("--batch-size", type=int, default=32)
     parser.add_argument("--epochs", type=int, default=10)
     parser.add_argument("--input-size", type=int, default=256)

@@ -28,9 +28,9 @@ def eval(opt):
         print("Using CPU!!!")
 
     gpu_info()
-    dataset_name = os.path.basename(opt.dataset_dir)
+    dataset_name = opt.dataset_name or os.path.basename(os.path.normpath(opt.dataset_dir))
     print(f"Evaluating on Dataset: {dataset_name}")
-    eval_save_path, result_save_path = check_eval_dirs(dataset_name, opt.ckp_paths[0])
+    eval_save_path, result_save_path = check_eval_dirs(dataset_name, opt.ckp_paths[0], opt.output_dir)
     prediction_save_dir = Path(eval_save_path) / 'predictions'
     prediction_save_dir.mkdir(exist_ok=True)
     print(f"Prediction images will be saved to: {prediction_save_dir}")
@@ -145,9 +145,14 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser('Change Detection eval')
     default_ckp_path = "runs/your_dataset/train/1/weights/epoch_x_x.pt"
     default_dataset_dir = 'data/your_dataset'
-    parser.add_argument("--ckp-paths", type=list, default=[default_ckp_path], help="Path to the model checkpoint file.")
+    parser.add_argument("--ckp-paths", nargs='+', default=[default_ckp_path], help="Path to the model checkpoint file.")
     parser.add_argument("--cuda", type=str, default="0", help="GPU ID")
     parser.add_argument("--dataset-dir", type=str, default=default_dataset_dir)
+    parser.add_argument("--dataset-name", type=str, default=None)
+    parser.add_argument("--output-dir", type=str, default="./runs")
+    parser.add_argument("--image-dir-a", type=str, default="A")
+    parser.add_argument("--image-dir-b", type=str, default="B")
+    parser.add_argument("--label-dir", type=str, default="label")
     parser.add_argument("--batch-size", type=int, default=16)
     default_num_workers = 0 if platform.system() == "Windows" else 8
     parser.add_argument("--num-workers", type=int, default=default_num_workers)
@@ -160,6 +165,6 @@ if __name__ == "__main__":
     else:
         print("\n" + "-" * 30 + "OPT" + "-" * 30)
         # 从dataset_dir自动推断dataset_name，这是一个好习惯
-        opt.dataset_name = Path(opt.dataset_dir).name
+        opt.dataset_name = opt.dataset_name or Path(opt.dataset_dir).name
         print(opt)
         eval(opt)

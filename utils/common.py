@@ -21,10 +21,10 @@ def init_seed(seed=347):
     cudnn.deterministic = True
 
 
-def check_dirs(dataset_name: str):
+def check_dirs(dataset_name: str, output_dir: str = "./runs"):
     print("\n" + "-" * 30 + "Check Dirs" + "-" * 30)
 
-    runs_dir = Path("./runs") / dataset_name / "train"
+    runs_dir = Path(output_dir) / dataset_name / "train"
     runs_dir.mkdir(parents=True, exist_ok=True)
 
     existing_runs = [int(p.name) for p in runs_dir.iterdir() if p.is_dir() and p.name.isdigit()]
@@ -42,10 +42,10 @@ def check_dirs(dataset_name: str):
     return str(save_path), str(weights_save_path), best_ckp_file, str(result_save_path)
 
 
-def check_eval_dirs(dataset_name: str, ckp_path: str):
+def check_eval_dirs(dataset_name: str, ckp_path: str, output_dir: str = "./runs"):
     print("\n" + "-" * 30 + "Check Dirs for Eval" + "-" * 30)
 
-    base_eval_dir = Path("./runs") / dataset_name / "eval"
+    base_eval_dir = Path(output_dir) / dataset_name / "eval"
     base_eval_dir.mkdir(parents=True, exist_ok=True)
 
     p = Path(ckp_path)

@@ -45,7 +45,10 @@ class CDDloader(data.Dataset):
         self.dual_label = opt.dual_label  
         self.phase = str(phase)
         self.aug = aug
-        names = [i for i in os.listdir(os.path.join(self.data_dir, phase, 'A'))]
+        self.image_dir_a = opt.image_dir_a
+        self.image_dir_b = opt.image_dir_b
+        self.label_dir = opt.label_dir
+        names = [i for i in os.listdir(os.path.join(self.data_dir, phase, self.image_dir_a))]
         self.names = []
         for name in names:
             if is_img(name):
@@ -56,10 +59,10 @@ class CDDloader(data.Dataset):
     def __getitem__(self, index):
 
         name = str(self.names[index])
-        img1 = Image.open(os.path.join(self.data_dir, self.phase, 'A', name))
-        img2 = Image.open(os.path.join(self.data_dir, self.phase, 'B', name))
+        img1 = Image.open(os.path.join(self.data_dir, self.phase, self.image_dir_a, name))
+        img2 = Image.open(os.path.join(self.data_dir, self.phase, self.image_dir_b, name))
         label_name = name.replace("tif", "png") if name.endswith("tif") else name   # for shengteng
-        label = Image.open(os.path.join(self.data_dir, self.phase, 'label', label_name))
+        label = Image.open(os.path.join(self.data_dir, self.phase, self.label_dir, label_name))
 
         if self.dual_label:
             label2 = Image.open(os.path.join(self.data_dir, self.phase, 'label2', label_name))
