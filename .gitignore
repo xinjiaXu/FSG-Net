@@ -16,3 +16,20 @@ runs/
 
 data/
 datasets/
+
+# Downloaded or trained model weights
+*.pyth
+*.safetensors
+
+# Training, evaluation, and prediction outputs
+work_dirs/
+*_work_dirs/
+checkpoint/
+checkpoints/
+outputs/
+predictions/
+results_*/
+logs/
+
+trainValLog.txt
+testLog.txt
