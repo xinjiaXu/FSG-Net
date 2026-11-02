@@ -56,3 +56,15 @@ bash run_eval.sh sysucd FSG-Net_work_dirs/sysucd/train/<run_id>/weights/<checkpo
 ```
 
 Evaluation is single-GPU and reports Precision, Recall, F1, mIoU, and OA. Results and prediction maps go under `FSG-Net_work_dirs/<dataset>/eval/<checkpoint-derived-name>/`.
+
+## Parameters and FLOPs
+
+After activating `fsgnet-rs`, install the profiler and count the default ResNet18 model with one paired 256x256 input:
+
+```bash
+python -m pip install -r requirements_profile.txt
+CUDA_VISIBLE_DEVICES=0 python profile_model.py --device cuda:0 \
+  --output FSG-Net_work_dirs/profile_256.json
+```
+
+The script uses the training defaults (ResNet18, `fpn+aspp+fuse+drop`, FCN, single label) and does not need a trained checkpoint. It reports `params_m` and `flops_g`; unsupported operations are listed, and FLOPs are partial if that list is non-empty. fvcore counts one multiply-add as one FLOP.
